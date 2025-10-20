@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Edit Ambang Batas Persentase</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        <h6 class="font-weight-bold mb-2">Password Awal</h6>
+        <div class="form-row mb-3">
+          <div class="col">
+            <label>MP</label>
+            <input type="number" step="0.1" name="password_awal_MP" class="form-control"
+                   value="{{ current['password_awal_MP'] or '' }}" placeholder="% MP">
+          </div>
+          <div class="col">
+            <label>Avian</label>
+            <input type="number" step="0.1" name="password_awal_AVIAN" class="form-control"
+                   value="{{ current['password_awal_AVIAN'] or '' }}" placeholder="% Avian">
+          </div>
+        </div>
+
+        <h6 class="font-weight-bold mb-2 mt-4">Penjualan</h6>
+        <div class="form-row mb-3">
+          <div class="col">
+            <label>MP</label>
+            <input type="number" step="0.1" name="penjualan_MP" class="form-control"
+                   value="{{ current['penjualan_MP'] or '' }}" placeholder="% MP">
+          </div>
+          <div class="col">
+            <label>Avian</label>
+            <input type="number" step="0.1" name="penjualan_AVIAN" class="form-control"
+                   value="{{ current['penjualan_AVIAN'] or '' }}" placeholder="% Avian">
+          </div>
+        </div>
+
+        <h6 class="font-weight-bold mb-2 mt-4">Tagihan</h6>
+        <div class="form-row mb-3">
+          <div class="col">
+            <label>MP</label>
+            <input type="number" step="0.1" name="tagihan_MP" class="form-control"
+                   value="{{ current['tagihan_MP'] or '' }}" placeholder="% MP">
+          </div>
+          <div class="col">
+            <label>Avian</label>
+            <input type="number" step="0.1" name="tagihan_AVIAN" class="form-control"
+                   value="{{ current['tagihan_AVIAN'] or '' }}" placeholder="% Avian">
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary">💾 Simpan</button>
+          <a href="{{ url_for('thresholds_list') }}" class="btn btn-secondary">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

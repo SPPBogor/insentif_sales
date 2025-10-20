@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3> Data Call per Bulan</h3>
+    <a href="{{ url_for('call_new') }}" class="btn btn-primary btn-sm">Tambah Data Call</a>
+  </div>
+
+  <div class="table-responsive">
+    <table id="tabelCall" class="table table-striped table-hover align-middle">
+      <thead>
+          <tr class="text-center">
+            <th>#</th>
+            <th>Bulan</th>
+            <th>Sales</th>
+            <th>Target Call</th>
+            <th>Actual Call</th>
+            <th>Pencapaian</th>
+            <th>Insentif CALL (Rp)</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+  {% set grand = 0 %}
+  {% if rows and rows|length > 0 %}
+    {% for c, s in rows %}
+      {% set ach = ((c.actual_call or 0) / (c.target_call or 1) * 100) if (c.target_call or 0) > 0 else None %}
+      {% set ins = calc_call(s.id, c.bulan, c.target_call or 0, c.actual_call or 0) %}
+      {% set grand = grand + ins %}
+      <tr>
+        <td></td>
+        <td class="text-center">{{ c.bulan }}</td>
+        <td>
+          <div class="font-weight-600">{{ s.name }}</div>
+          <small class="text-muted">{{ s.divisi }} | {{ s.area }}</small>
+        </td>
+        <td class="text-right">{{ c.target_call or 0 }}</td>
+        <td class="text-right">{{ c.actual_call or 0 }}</td>
+        <td class="text-center">
+          {% if ach is not none %}
+            {{ "%.0f"|format(ach) }}%
+            {% if ach >= 85 %}<span class="badge badge-success ml-1">≥85%</span>{% endif %}
+          {% else %}—{% endif %}
+        </td>
+        <td class="text-right">{{ "{:,.0f}".format(ins) }}</td>
+        <td class="text-center">
+          <a href="{{ url_for('call_edit', id=c.id) }}" class="btn btn-sm btn-warning">Edit</a>
+          <form action="{{ url_for('call_delete', id=c.id) }}" method="post" class="d-inline"
+                onsubmit="return confirm('Hapus data ini?')">
+            <button class="btn btn-sm btn-danger">Hapus</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  {% endif %}
+</tbody>
+
+        <tfoot>
+  <tr>
+    <th></th> <!-- # -->
+    <th colspan="5" class="text-right">Total Insentif CALL</th> <!-- Bulan..Pencapaian -->
+    <th class="text-right">{{ "{:,.0f}".format(grand) }}</th>   <!-- Insentif -->
+    <th></th> <!-- Aksi -->
+  </tr>
+</tfoot>
+
+      </table>
+    </div>
+  </div><script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(function () {
+  // Hindari re-init kalau halaman di-render ulang via turbolinks/htmx dll.
+  if ($.fn.DataTable.isDataTable('#tabelCall')) {
+    $('#tabelCall').DataTable().destroy();
+  }
+
+  const t = $('#tabelCall').DataTable({
+    pageLength: 25,
+    order: [[1, 'asc']], // kolom "Nama"
+  });
+
+  function renumber() {
+    const info = t.page.info();
+    t.column(0, { search: 'applied', order: 'applied', page: 'current' })
+      .nodes()
+      .each(function (cell, i) {
+        cell.innerHTML = i + 1 + info.start;
+      });
+  }
+
+  t.on('order.dt search.dt draw.dt', renumber);
+  renumber(); // pertama kali
+});
+</script>
+{% endblock %}

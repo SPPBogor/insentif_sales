@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h4>{{ 'Edit Salesman' if row else 'Tambah Salesman' }}</h4>
+  <form method="post">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Nama</label>
+        <input type="text" name="name" class="form-control" value="{{ row.name if row else '' }}" required>
+      </div>
+      <div class="form-group col-md-6">
+        <label>Area</label>
+        <input type="text" name="area" class="form-control" value="{{ row.area if row else '' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Divisi</label>
+        <select name="divisi" class="form-control" required>
+          {% set d = row.divisi if row else '' %}
+          <option value="" disabled {{ 'selected' if not d }}>-- pilih --</option>
+          <option value="MP" {{ 'selected' if d=='MP' }}>MP (Semen)</option>
+          <option value="AVIAN" {{ 'selected' if d=='AVIAN' }}>AVIAN</option>
+        </select>
+      </div>
+      <div class="form-group col-md-6">
+        <label>Kategori</label>
+        {% set k = row.kategori if row else '' %}
+        <select name="kategori" class="form-control" required>
+          <option value="" disabled {{ 'selected' if not k }}>-- pilih --</option>
+          {% for x in ['Bronze','Silver','Gold','Platinum'] %}
+            <option value="{{ x }}" {{ 'selected' if k==x }}>{{ x }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('salesman_list') }}" class="btn btn-link">Batal</a>
+  </form>
+</div>
+{% endblock %}

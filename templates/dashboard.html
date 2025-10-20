@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="h5">Salesman</div>
+          <div class="display-4">{{ total_salesman }}</div>
+        </div>
+        <span class="badge badge-dark">Master</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="h5">Target</div>
+          <div class="display-4">{{ total_target }}</div>
+        </div>
+        <span class="badge badge-dark">Penjualan</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="h5">NOO</div>
+          <div class="display-4">{{ total_noo }}</div>
+        </div>
+        <span class="badge badge-dark">Aktivasi</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="h5">Call</div>
+          <div class="display-4">{{ total_call }}</div>
+        </div>
+        <span class="badge badge-dark">Placeholder</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

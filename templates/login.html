@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height:80vh;">
+  <div class="card p-4 shadow-lg" style="max-width:380px; width:100%;">
+    <div class="text-center mb-4">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" height="48" class="mb-2">
+      <h5 class="font-weight-bold">Login Insentif</h5>
+      <p class="text-muted mb-0">PT Satria Putra Persada</p>
+    </div>
+
+    <form method="POST" autocomplete="off">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" class="form-control" name="username" required placeholder="Masukkan username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" name="password" required placeholder="Masukkan password">
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2">Login</button>
+    </form>
+
+    <hr>
+    <p class="text-center text-muted small mb-0">
+      © 2025 PT Satria Putra Persada
+    </p>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(17,24,39,.08);
+    transition: background .3s ease;
+  }
+  input.form-control {
+    background: var(--card);
+    color: var(--text);
+  }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 600;
+    border-radius: 8px;
+  }
+  .btn-primary:hover {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+  }
+</style>
+{% endblock %}

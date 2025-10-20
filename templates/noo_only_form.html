@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h4>{{ 'Edit NOO / LOST' if row else 'Input NOO / LOST' }}</h4>
+  <form method="post" novalidate>
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label>Bulan (YYYY-MM)</label>
+        <input type="text" name="bulan" class="form-control"
+               value="{{ row.bulan if row else '' }}" placeholder="2025-10"
+               pattern="\d{4}-(0[1-9]|1[0-2])"
+               title="Format wajib YYYY-MM, contoh: 2025-10" required>
+      </div>
+      <div class="form-group col-md-5">
+        <label>Salesman</label>
+        <select name="salesman_id" class="form-control" required>
+          {% for s in salesmen %}
+            <option value="{{ s.id }}" {% if row and row.salesman_id==s.id %}selected{% endif %}>
+              {{ s.name }} ({{ s.divisi }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-md-4">
+        <label>Jumlah Toko NOO / LOST</label>
+        <input type="number" name="jumlah_toko_noo" class="form-control"
+               value="{{ row.jumlah_toko_noo if row else 0 }}" min="0" step="1" required>
+      </div>
+    </div>
+
+    <button class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('noo_only_list') }}" class="btn btn-link">Batal</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Rekap Insentif</h3>
+  
+</div>
+
+
+<div class="card p-2">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+  <h3></h3>
+  <div class="d-flex">
+    <form method="get" class="form-inline mr-2">
+      <input type="text" class="form-control mr-2" name="bulan" placeholder="2025-10" value="{{ bulan or '' }}">
+      <button class="btn btn-outline-light">Filter</button>
+    </form>
+    <a href="{{ url_for('rekap_export', bulan=bulan) }}" class="btn btn-success">📊 Export Excel</a>
+  </div>
+</div>
+  <div class="table-responsive">
+    <table id="tabelRekap"  class="table table-striped table-hover align-middle">
+
+      <thead>
+         <tr>
+        <th rowspan="2">#</th>
+        <th rowspan="2">Bulan</th>
+        <th rowspan="2">Salesman</th>
+        <th rowspan="2">Kategori</th>
+        <th colspan="3" class="text-center th-group">Insentif</th>
+        <th rowspan="2" class="text-end">Total</th>
+      </tr>
+      <!-- Baris header 2: sub kolom di bawah "Insentif" -->
+      <tr>
+        <th class="text-end">Penjualan</th>
+        <th class="text-end">Tagihan</th>
+        <th class="text-end">(NOO-CA-FL/AO)</th>
+      </tr>
+
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td></td>
+          <td><span class="badge badge-dark">{{ r.bulan }}</span></td>
+          <td>
+          <div class="font-weight-600">{{ r.name }}</div>
+          <small class="text-muted">{{ r.divisi }} | {{ r.area }}</small>
+          </td>
+          <td>{{ r.kategori }}</td>
+          <td>Rp {{ "{:,.0f}".format(r.total_penjualan) }}</td>
+          <td>Rp {{ "{:,.0f}".format(r.total_tagihan) }}</td>
+          <td>Rp {{ "{:,.0f}".format(r.total_noo) }}</td>
+          <td><b>Rp {{ "{:,.0f}".format(r.total) }}</b></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+$(function () {
+  const t = $('#tabelRekap').DataTable({ pageLength: 25, order: [[1,'asc']] });
+  function renumber(){
+    const info = t.page.info();
+    t.column(0, {search:'applied', order:'applied', page:'current'}).nodes()
+     .each(function(cell,i){ cell.innerHTML = i+1+info.start;});
+  }
+  t.on('order.dt search.dt draw.dt', renumber); renumber();
+});
+</script>
+{% endblock %}

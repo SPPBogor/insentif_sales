@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h4>{{ 'Edit FL (MP) / AO (AVIAN)' if row else 'Input FL (MP) / AO (AVIAN)' }}</h4>
+  <form method="post" id="fl-ao-form" novalidate>
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label>Bulan (YYYY-MM)</label>
+        <input type="text" name="bulan" class="form-control"
+               value="{{ row.bulan if row else '' }}" placeholder="2025-10"
+               pattern="\d{4}-(0[1-9]|1[0-2])"
+               title="Format wajib YYYY-MM, contoh: 2025-10" required>
+      </div>
+      <div class="form-group col-md-5">
+        <label>Salesman</label>
+        <select name="salesman_id" id="salesman_id" class="form-control" required>
+          {% for s in salesmen %}
+            <option value="{{ s.id }}" data-divisi="{{ s.divisi }}"
+              {% if row and row.salesman_id==s.id %}selected{% endif %}>
+              {{ s.name }} ({{ s.divisi }})
+            </option>
+          {% endfor %}
+        </select>
+        <small class="form-text text-muted">MP → isi FL; AVIAN → isi AO.</small>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label>Target FL (MP)</label>
+        <input type="number" name="target_fl" id="target_fl" class="form-control"
+               value="{{ row.target_fl if row else 0 }}" min="0" step="1">
+      </div>
+      <div class="form-group col-md-3">
+        <label>Actual FL (MP)</label>
+        <input type="number" name="actual_fl" id="actual_fl" class="form-control"
+               value="{{ row.actual_fl if row else 0 }}" min="0" step="1">
+      </div>
+      <div class="form-group col-md-3">
+        <label>Target AO (AVIAN)</label>
+        <input type="number" name="target_ao" id="target_ao" class="form-control"
+               value="{{ row.target_ao if row else 0 }}" min="0" step="1">
+      </div>
+      <div class="form-group col-md-3">
+        <label>Actual AO (AVIAN)</label>
+        <input type="number" name="actual_ao" id="actual_ao" class="form-control"
+               value="{{ row.actual_ao if row else 0 }}" min="0" step="1">
+      </div>
+    </div>
+
+    <button class="btn btn-primary">Simpan</button>
+    <a href="{{ url_for('fl_ao_list') }}" class="btn btn-link">Batal</a>
+  </form>
+</div>
+
+<script>
+(function(){
+  function applyDivisiLock(){
+    var opt = document.querySelector('#salesman_id option:checked');
+    if(!opt) return;
+    var divisi = opt.dataset.divisi;
+    var isMP = divisi === 'MP';
+    // Enable FL for MP; disable AO
+    document.getElementById('target_fl').disabled = !isMP;
+    document.getElementById('actual_fl').disabled = !isMP;
+    document.getElementById('target_ao').disabled = isMP;
+    document.getElementById('actual_ao').disabled = isMP;
+
+    if(isMP){
+      // zero AO fields to prevent accidental values
+      document.getElementById('target_ao').value = 0;
+      document.getElementById('actual_ao').value = 0;
+    }else{
+      // zero FL fields
+      document.getElementById('target_fl').value = 0;
+      document.getElementById('actual_fl').value = 0;
+    }
+  }
+  document.getElementById('salesman_id').addEventListener('change', applyDivisiLock);
+  document.addEventListener('DOMContentLoaded', applyDivisiLock);
+})();
+</script>
+{% endblock %}

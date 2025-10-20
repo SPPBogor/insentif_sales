@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Insentif Sales • PT Satria Putra Persada</title>
+
+  <!-- Bootstrap 4.6 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- DataTables Bootstrap 4 -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+  <style>
+    /* ========= THEME TOKENS ========= */
+    :root{
+      --accent:#7A1F1F; --accent-2:#A02C2C;
+      --bg:#F6F7FB; --card:#FFFFFF; --text:#111418;
+      --muted:#6B7280; --border:#E5E7EB; --thead:#F2F3F7;
+      --hover:#FEF2F2; --link:#7A1F1F;
+      --toast-header:#7A1F1F; --toast-body:#ffffff;
+      --success:#28a745; --success-hover:#218838;
+    }
+    [data-theme="dark"]{
+      --accent:#C65252; --accent-2:#E06565; --accent-3:#dde241;
+      --bg:#0B0F19; --card:#121826; --text:#E8EAED;
+      --muted:#9AA4B2; --border:#1F2A3A; --thead:#131C2B;
+      --hover:#24171A; --link:#E06565;
+      --toast-header:#C65252; --toast-body:#0F1522;
+    }
+
+    html,body{height:100%}
+    body{
+      background:var(--bg); color:var(--text);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      transition:background .25s ease, color .25s ease;
+    }
+
+    /* ===== Navbar (1x saja, jangan duplikat) ===== */
+    .navbar{
+      background:var(--card) !important;
+      box-shadow:0 4px 12px rgba(0,0,0,.05);
+      border-bottom:1px solid var(--border);
+    }
+    .navbar .navbar-brand{ color:var(--accent) !important; font-weight:700; }
+    .navbar .nav-link{ color:var(--text) !important; opacity:.95; font-weight:500; }
+    .navbar .nav-link:hover{ color:var(--accent) !important; }
+
+    /* Hamburger terlihat di kedua tema */
+    .navbar-light .navbar-toggler{ border-color:var(--border); }
+    .navbar-light .navbar-toggler:focus{
+      box-shadow:0 0 0 .15rem color-mix(in oklab, var(--accent) 25%, transparent);
+    }
+    .navbar-light .navbar-toggler-icon{
+      background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(17,20,24,0.85)' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+    [data-theme="dark"] .navbar-light .navbar-toggler{ border-color:rgba(255,255,255,.15); }
+    [data-theme="dark"] .navbar-light .navbar-toggler-icon{
+      background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.92)' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.28));
+    }
+
+    /* Dropdown kontras */
+    .navbar .dropdown-menu{
+      background:var(--card); border:1px solid var(--border); color:var(--text);
+    }
+    .navbar .dropdown-item{ color:var(--text); font-weight:500; }
+    .navbar .dropdown-item:hover{ background:var(--hover); color:var(--accent); }
+    [data-theme="dark"] .navbar .dropdown-menu{
+      background: color-mix(in oklab, var(--card) 90%, black);
+      box-shadow:0 8px 24px rgba(0,0,0,.6);
+    }
+    [data-theme="dark"] .navbar .dropdown-item:hover{
+      background: color-mix(in oklab, var(--accent) 25%, transparent); color:#fff;
+    }
+    
+    
+
+    /* Theme button */
+    .theme-toggle{
+      border:1px solid var(--border); background:var(--card); color:var(--text);
+      border-radius:24px; padding:.35rem .8rem; font-weight:600;
+    }
+
+    /* ===== Card, Buttons, Table, Toast ===== */
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; box-shadow:0 10px 24px rgba(17,24,39,.06); }
+    .btn-primary{ background:var(--accent); border-color:var(--accent); border-radius:10px; padding:.55rem 1rem; font-weight:600; }
+    .btn-primary:hover{ background:var(--accent-2); border-color:var(--accent-2); }
+    .btn-outline-light{ border-color:var(--border); color:var(--text); }
+    .btn-success{ background:var(--success); border-color:var(--success); color:#fff; border-radius:10px; padding:.55rem 1rem; font-weight:600; }
+    .btn-success:hover{ background:var(--success-hover); border-color:var(--success-hover); }
+    .btn-warning { background: var(--warning); border-color: var(--warning); color: #fff; border-radius: 10px; padding: .55rem 1rem; font-weight: 600; }
+
+.btn-warning:hover {
+  background: var(--accent-3);
+  border-color: var(--warning-hover);
+}
+
+    .table{ background:var(--card); color:var(--text); border-collapse:separate !important; border-spacing:0; overflow:hidden; border-radius:12px; }
+    .table thead th{ background:var(--thead); color:var(--text); border-bottom:2px solid var(--border); font-weight:700; }
+   /* Hover default (light mode) */
+.table-hover tbody tr:hover {
+  background: var(--hover);
+}
+.table-responsive { overflow-x: auto; scrollbar-width: thin; }
+.table-responsive::-webkit-scrollbar { height: 6px; }
+.table-responsive::-webkit-scrollbar-thumb { background: #5a5f67; border-radius: 8px; }
+.table-responsive::-webkit-scrollbar-track { background: #2a2d33; border-radius: 8px; }
+/* Hover khusus untuk dark mode */
+[data-theme="dark"] .table-hover tbody tr:hover {
+  background: var(--hover);
+  color: #ffffff !important; /* teks jadi putih */
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover td,
+[data-theme="dark"] .table-hover tbody tr:hover th {
+  color: #ffffff !important; /* pastikan semua kolom ikut putih */
+}
+
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select{
+      background:var(--card); color:var(--text); border:1px solid var(--border);
+      border-radius:8px; padding:.35rem .5rem;
+    }
+    .dataTables_wrapper .dataTables_paginate .pagination .page-link{
+      color:var(--text); border:1px solid var(--border); background:var(--card);
+      border-radius:8px; margin:0 .2rem; padding:.35rem .65rem;
+    }
+    .dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link{
+      background:var(--accent); border-color:var(--accent); color:#fff;
+    }
+
+    a, .btn-link{ color:var(--link); }
+    #toast-stack .toast{ border:none; overflow:hidden; border-radius:12px; box-shadow:0 12px 28px rgba(0,0,0,.18); }
+    #toast-stack .toast-header{ background:var(--toast-header); color:#fff; }
+    #toast-stack .toast-body{ background:var(--toast-body); color:var(--text); border-top:1px solid var(--border); }
+
+    .container{ padding-top:24px; padding-bottom:32px; }
+    @media (max-width: 991.98px){ .navbar .dropdown-menu{ width:100%; border-radius:12px; } .theme-toggle{ width:100%; } }
+  </style>
+</head>
+<body>
+
+{# ================= CONTEXT ================= #}
+{% set u = session.get('user') %}
+{% set logged_in = u and (u is mapping) %}
+{% set role = (u.role if logged_in else '') %}
+
+{# ========== NAVBAR (sembunyikan di /login) ========== #}
+{% if request.endpoint != 'login' %}
+<nav class="navbar navbar-expand-lg navbar-light">
+  <a class="navbar-brand d-flex align-items-center" href="{{ url_for('dashboard') }}">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="PTSP Logo" height="32" class="mr-2">
+    <span> • Insentif</span>
+  </a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navMain"
+          aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navMain">
+    <ul class="navbar-nav mr-auto">
+      {% if logged_in %}
+       {% if role == 'superadmin' %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('salesman_list') }}">Salesman</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('insentif_list') }}">Insentif</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('override_list') }}">Override per Sales</a></li>
+          {% endif %}
+        {# ---- Menu untuk semua user yang login (ADMIN & SUPERADMIN) ---- #}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="targetDropdown" role="button" data-toggle="dropdown">Target</a>
+          <div class="dropdown-menu" aria-labelledby="targetDropdown">
+            <a class="dropdown-item" href="{{ url_for('password_awal_list') }}">Target Awal</a>
+            <a class="dropdown-item" href="{{ url_for('target_list') }}">Penjualan</a>
+            <a class="dropdown-item" href="{{ url_for('target_tagihan_list') }}">Tagihan</a>
+            
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="nooDropdown" role="button" data-toggle="dropdown">(Gabungan)</a>
+          <div class="dropdown-menu" aria-labelledby="nooDropdown">
+            <a class="dropdown-item" href="{{ url_for('noo_only_list') }}">NOO / LOST</a>
+            <a class="dropdown-item" href="{{ url_for('ca_list') }}">CA</a>
+            <a class="dropdown-item" href="{{ url_for('fl_ao_list') }}">FL/AO</a>
+          </div>
+        </li>
+
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('call_list') }}">Call</a></li>
+
+        {# ---- Menu khusus SUPERADMIN ---- #}
+        {% if role == 'superadmin' %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('thresholds_list') }}">Thresholds</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('user_list') }}">Users</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('rekap') }}">Rekap</a></li>
+        {% endif %}
+      {% endif %}
+    </ul>
+
+    <div class="d-flex align-items-center">
+      {% if logged_in %}
+        <span class="navbar-text mr-3"><i class="fa-regular fa-user mr-1"></i>{{ u.full_name }}</span>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm mr-2">Logout</a>
+      {% endif %}
+      <button id="themeToggle" class="theme-toggle">🌞 Light</button>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<div class="container">
+  <!-- Toast stack -->
+  <div aria-live="polite" aria-atomic="true" style="position: relative;">
+    <div id="toast-stack" style="position: fixed; top: 14px; right: 14px; z-index: 1080;"></div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          var stack = document.getElementById('toast-stack');
+          {% for category, message in messages %}
+          var t = document.createElement('div');
+          t.className = 'toast'; t.setAttribute('role','alert'); t.setAttribute('data-delay','3000');
+          t.innerHTML = `
+            <div class="toast-header">
+              <strong class="mr-auto">{{ 'Sukses' if category=='success' else 'Info' if category=='info' else 'Peringatan' if category=='warning' else 'Error' }}</strong>
+              <small>sekarang</small>
+              <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="toast-body">{{ message|safe }}</div>`;
+          stack.appendChild(t); $(t).toast('show');
+          {% endfor %}
+        });
+      </script>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+  // DataTables default untuk table.sortable
+  document.addEventListener('DOMContentLoaded', function(){
+    var $ = window.jQuery;
+    if ($ && $.fn && $.fn.DataTable) {
+      $('table.sortable').DataTable({
+        pageLength: 25, order: [],
+        language: {
+          search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", zeroRecords: "Tidak ditemukan",
+          info: "Menampilkan _START_–_END_ dari _TOTAL_ data",
+          paginate: { previous: "←", next: "→" }
+        }
+      });
+    }
+  });
+
+  // Theme Toggle persist
+  (function(){
+    var root = document.documentElement, btn = document.getElementById('themeToggle');
+    var saved = localStorage.getItem('theme-mode');
+    if(saved){ root.setAttribute('data-theme', saved); }
+    btn.textContent = (root.getAttribute('data-theme') === 'dark') ? '🌙 Dark' : '🌞 Light';
+    btn.addEventListener('click', function(){
+      var now = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', now);
+      localStorage.setItem('theme-mode', now);
+      btn.textContent = now === 'dark' ? '🌙 Dark' : '🌞 Light';
+    });
+  })();
+</script>
+
+</body>
+</html>

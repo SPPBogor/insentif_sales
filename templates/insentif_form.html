@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">
+        {% if row %}Edit Insentif{% else %}Tambah Insentif Baru{% endif %}
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <form method="post" id="insentifForm">
+        <!-- Jenis -->
+        <div class="form-group">
+          <label>Jenis Insentif</label>
+          <select name="jenis" id="jenis" class="form-control" required>
+            {% set jenis_opts = ['penjualan','tagihan','ca','noo_item','fl','ao'] %}
+            {% for j in jenis_opts %}
+              <option value="{{ j }}" {% if row and row.jenis==j %}selected{% endif %}>
+                {{ j|capitalize }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Divisi & Kategori (hanya untuk penjualan/tagihan) -->
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Divisi <small class="text-muted">(hanya Penjualan/Tagihan)</small></label>
+            <select name="divisi" id="divisi" class="form-control">
+              <option value="">—</option>
+              <option value="MP" {% if row and row.divisi=='MP' %}selected{% endif %}>MP</option>
+              <option value="AVIAN" {% if row and row.divisi=='AVIAN' %}selected{% endif %}>AVIAN</option>
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Kategori <small class="text-muted">(hanya Penjualan/Tagihan)</small></label>
+            <select name="kategori" id="kategori" class="form-control">
+              <option value="">—</option>
+              {% for k in ['Bronze','Silver','Gold','Platinum'] %}
+                <option value="{{ k }}" {% if row and row.kategori==k %}selected{% endif %}>{{ k }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Nominal -->
+        <div class="form-group">
+          <label>Nominal (Rp)</label>
+          <input type="number" name="amount" class="form-control" min="0" step="1"
+                 value="{{ row.amount if row else 0 }}" required>
+        </div>
+
+        <!-- Aktif -->
+        <div class="form-check mb-3">
+          <input type="checkbox" name="is_active" id="is_active" class="form-check-input"
+                 {% if (row and row.is_active) or not row %}checked{% endif %}>
+          <label for="is_active" class="form-check-label">Aktif</label>
+        </div>
+
+        <!-- Actions -->
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Simpan
+        </button>
+        <a href="{{ url_for('insentif_list') }}" class="btn btn-secondary">Batal</a>
+      </form>
+    </div>
+  </div>
+
+  <div class="alert alert-info mt-3 mb-0">
+    <strong:>Catatan:</strong:> Untuk <em>Penjualan</em> & <em>Tagihan</em>, Divisi & Kategori wajib diisi.
+    Untuk jenis lain, biarkan kosong.
+  </div>
+</div>
+
+<!-- Toggle logic -->
+<script>
+(function () {
+  function toggleFields() {
+    var jenis = document.getElementById('jenis').value;
+    var needDK = (jenis === 'penjualan' || jenis === 'tagihan');
+    var divisi = document.getElementById('divisi');
+    var kategori = document.getElementById('kategori');
+
+    divisi.disabled = !needDK;
+    kategori.disabled = !needDK;
+
+    if (!needDK) {
+      divisi.value = '';
+      kategori.value = '';
+    }
+  }
+  document.getElementById('jenis').addEventListener('change', toggleFields);
+  // initial state on load
+  toggleFields();
+})();
+</script>
+{% endblock %}

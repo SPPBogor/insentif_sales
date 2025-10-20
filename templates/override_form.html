@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">
+        {% if row %}Edit Override Call{% else %}Tambah Override Call{% endif %}
+      </h5>
+    </div>
+
+    <div class="card-body">
+      {% if not salesmen or salesmen|length == 0 %}
+        <div class="alert alert-warning">
+          Belum ada data <strong>Salesman</strong>. 
+          Silakan tambah dulu di menu <a href="{{ url_for('salesman_list') }}">Salesman</a>.
+        </div>
+      {% endif %}
+
+      <form method="post">
+        <!-- Salesman -->
+        <div class="form-group">
+          <label>Salesman</label>
+          <select name="salesman_id" class="form-control" required>
+            <option value="" disabled selected>— Pilih Salesman —</option>
+            {% for s in salesmen %}
+              <option value="{{ s.id }}" {% if row and row.salesman_id==s.id %}selected{% endif %}>
+                {{ s.name }} — {{ s.divisi }}/{{ s.kategori }} ({{ s.area or '-' }})
+              </option>
+            {% endfor %}
+          </select>
+          <small class="form-text text-muted">Override ini hanya berlaku untuk salesman terpilih.</small>
+        </div>
+
+        <!-- Bulan (opsional) -->
+        <div class="form-group">
+          <label>Bulan (opsional)</label>
+          <input type="text" name="bulan" class="form-control" placeholder="YYYY-MM (mis. 2025-10)"
+                 value="{{ row.bulan if row else '' }}">
+          <small class="form-text text-muted">
+            Kosongkan jika override ini berlaku untuk semua bulan.
+          </small>
+        </div>
+
+        <!-- Nominal -->
+        <div class="form-group">
+          <label>Nominal Insentif CALL (Rp)</label>
+          <input type="number" name="amount" class="form-control" min="0" step="1"
+                 value="{{ row.amount if row else 0 }}" required>
+          <small class="form-text text-muted">
+            Isi nominal khusus untuk insentif CALL salesman ini.
+          </small>
+        </div>
+
+        <!-- Aktif -->
+        <div class="form-check mb-3">
+          <input type="checkbox" name="is_active" id="is_active"
+                 class="form-check-input"
+                 {% if (row and row.is_active) or not row %}checked{% endif %}>
+          <label for="is_active" class="form-check-label">Aktif</label>
+        </div>
+
+        <!-- Hidden jenis otomatis -->
+        <input type="hidden" name="jenis" value="call">
+
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Simpan
+        </button>
+        <a href="{{ url_for('override_list') }}" class="btn btn-secondary">Batal</a>
+      </form>
+    </div>
+  </div>
+
+  <div class="alert alert-info mt-3 mb-0">
+    <strong>Keterangan:</strong> Form ini hanya untuk override insentif <em>CALL</em> per salesman.
+  </div>
+</div>
+{% endblock %}

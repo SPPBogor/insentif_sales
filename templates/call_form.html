@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">
+        {% if row %}Edit Data Call{% else %}Tambah Data Call{% endif %}
+      </h5>
+    </div>
+    <div class="card-body">
+      {% if not salesmen or salesmen|length == 0 %}
+        <div class="alert alert-warning">
+          Belum ada data <strong>Salesman</strong>.
+          Silakan tambah dulu di menu <a href="{{ url_for('salesman_list') }}">Salesman</a>.
+        </div>
+      {% endif %}
+
+      <form method="post">
+        <div class="form-row">
+          <div class="form-group col-md-5">
+            <label>Salesman</label>
+            <select name="salesman_id" class="form-control" required>
+              <option value="" disabled selected>— Pilih Salesman —</option>
+              {% for s in salesmen %}
+                <option value="{{ s.id }}"
+                  {% if row and row.salesman_id==s.id %}selected{% endif %}>
+                  {{ s.name }} — {{ s.divisi }}/{{ s.kategori }} ({{ s.area or '-' }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-md-3">
+            <label>Bulan</label>
+            <input type="text" name="bulan" class="form-control" placeholder="YYYY-MM (mis. 2025-10)"
+                   value="{{ row.bulan if row else '' }}" required>
+          </div>
+          <div class="form-group col-md-2">
+            <label>Target Call</label>
+            <input type="number" name="target_call" class="form-control" min="0" step="1"
+                   value="{{ row.target_call if row else 0 }}">
+          </div>
+          <div class="form-group col-md-2">
+            <label>Actual Call</label>
+            <input type="number" name="actual_call" class="form-control" min="0" step="1"
+                   value="{{ row.actual_call if row else 0 }}" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Simpan
+        </button>
+        <a href="{{ url_for('call_list') }}" class="btn btn-secondary">Batal</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

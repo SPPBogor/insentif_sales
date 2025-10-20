@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>CA (Customer Active)</h3>
+  <a href="{{ url_for('ca_new') }}" class="btn btn-primary">+ Input CA</a>
+</div>
+
+<div class="table-responsive">
+  <table id="tabelCA" class="table table-striped table-hover align-middle">
+    <thead>
+      <tr class="text-center">
+        <th style="width:64px">#</th>
+        <th>Bulan</th>
+        <th>Salesman</th>
+        <th>Target CA</th>
+        <th>Actual CA</th>
+        <th>Insentif</th>
+        <th class="text-right">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for r, s in rows %}
+      {# contoh rule insentif: 100k jika >=80% #}
+      {% set ins = 100000 if (r.target_ca or 0) > 0 and (r.actual_ca or 0) / (r.target_ca or 1) >= 0.8 else 0 %}
+      <tr>
+        <td></td>  {# kolom nomor, diisi via JS #}
+        <td><span class="badge badge-dark">{{ r.bulan }}</span></td>
+        <td>
+          <div class="font-weight-600">{{ s.name }}</div>
+          <small class="text-muted">{{ s.divisi }} | {{ s.area }}</small>  
+        </td>
+        <td>{{ "{:,.0f}".format(r.target_ca or 0) }}</td>
+        <td>{{ "{:,.0f}".format(r.actual_ca or 0) }}</td>
+        <td class="text-right">Rp {{ "{:,.0f}".format(ins) }}</td>
+        <td class="text-right">
+          <a href="{{ url_for('ca_edit', id=r.id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+            <form action="{{ url_for('ca_delete', id=r.id) }}" method="post"
+                  style="display:inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+              <button class="btn btn-sm btn-outline-danger">Hapus</button>
+            </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{# ==== DataTables assets ==== #}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(function () {
+  // Jika sudah pernah diinit, ambil instance yg ada; kalau belum, baru init
+  const t = $.fn.dataTable.isDataTable('#tabelCA')
+    ? $('#tabelCA').DataTable()
+    : $('#tabelCA').DataTable({
+    pageLength: 25,
+    order: [[1, 'asc']],
+    columnDefs: [
+      { orderable: false, targets: 0 },
+      // kanan-kanankan kolom 3..6 (index 3,4,5,6)
+      { className: 'text-right', targets: [3,4,5,6] }
+    ],
+    language: {
+      search: "Cari:",
+      lengthMenu: "Tampilkan _MENU_ data",
+      info: "Menampilkan _START_–_END_ dari _TOTAL_ data",
+      infoEmpty: "Tidak ada data",
+      paginate: { previous: "«", next: "»" }
+    }
+  });
+
+  function renumber(){
+    // mulai dari 1 setiap halaman (hapus info.start jika mau continuous)
+    const info = t.page.info();
+    t.column(0, {search:'applied', order:'applied', page:'current'}).nodes()
+     .each(function(cell,i){ cell.innerHTML = i + 1; });
+  }
+  t.on('order.dt search.dt draw.dt', renumber);
+  renumber();
+});
+</script>
+
+
+{# ================== CATATAN MODE "dbid" ==================
+   Jika ingin pakai ID database sebagai nomor:
+   1) Ubah sel nomor di tbody dari <td class="text-center"></td>
+      menjadi: <td class="text-center">{{ r.id }}</td>
+   2) Set NUMBERING_MODE = "dbid"
+   3) (Opsional) Hapus fungsi renumber() dan event .on(...) untuk performa.
+#}
+{% endblock %}
