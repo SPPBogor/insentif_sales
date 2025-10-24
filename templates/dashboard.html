@@ -1,49 +1,182 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
-  <div class="col-md-3">
-    <div class="card p-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <div class="h5">Salesman</div>
-          <div class="display-4">{{ total_salesman }}</div>
+
+<div class="dash-wrap container py-3">
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h4 class="mb-0 fw-semibold">Performance Dashboard</h4>
+      <div class="muted">Snapshot per kategori • periode terakhir di tiap kartu</div>
+    </div>
+    <div class="d-none d-md-block">
+      <span class="chip chip-purple">Realtime read</span>
+    </div>
+  </div>
+
+  <!-- ========== MAIN CARDS ========== -->
+  <div class="row g-3 text-center">
+
+    <!-- Salesman -->
+    <div class="col-12 col-md-3">
+      <div class="dash-card h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="dash-title">Salesman</div>
+            <div class="display-6 dash-value">{{ total_salesman }}</div>
+          </div>
+          <span class="chip chip-dark">Master</span>
         </div>
-        <span class="badge badge-dark">Master</span>
+        <div class="mt-2 muted">Total aktif pada master data.</div>
+      </div>
+    </div>
+
+    <!-- Password Awal -->
+    {% set pw_total = pw_lolos + pw_tidak %}
+    {% set pw_pct = (100 * pw_lolos / (pw_total if pw_total>0 else 1)) | round(0) %}
+    <div class="col-12 col-md-3">
+      <div class="dash-card h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="dash-title">Password Awal</div>
+            <div class="h3 mb-0">{{ pw_lolos }} <small class="muted">lolos</small></div>
+            <div class="dash-kicker">{{ pw_bulan or '-' }}</div>
+          </div>
+          <span class="chip chip-green">Pass Check</span>
+        </div>
+
+        <div class="progress-slim mt-3">
+          <div class="bar green" style="width: {{ pw_pct }}%;"></div>
+        </div>
+        <div class="d-flex justify-content-between mt-2 small">
+          <span class="text-success">Lolos: {{ pw_lolos }}</span>
+          <span class="text-danger">Tidak: {{ pw_tidak }}</span>
+          <span class="muted">{{ pw_pct }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Target Penjualan -->
+    {% set pj_total = pj_lolos + pj_tidak %}
+    {% set pj_pct = (100 * pj_lolos / (pj_total if pj_total>0 else 1)) | round(0) %}
+    <div class="col-12 col-md-3">
+      <div class="dash-card h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="dash-title">Target Penjualan</div>
+            <div class="h3 mb-0">{{ pj_lolos }} <small class="muted">lolos</small></div>
+            <div class="dash-kicker">{{ pj_bulan or '-' }}</div>
+          </div>
+          <span class="chip chip-blue">Penjualan</span>
+        </div>
+
+        <div class="progress-slim mt-3">
+          <div class="bar blue" style="width: {{ pj_pct }}%;"></div>
+        </div>
+        <div class="d-flex justify-content-between mt-2 small">
+          <span class="text-success">Lolos: {{ pj_lolos }}</span>
+          <span class="text-danger">Tidak: {{ pj_tidak }}</span>
+          <span class="muted">{{ pj_pct }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Target Tagihan -->
+    {% set tg_total = tg_lolos + tg_tidak %}
+    {% set tg_pct = (100 * tg_lolos / (tg_total if tg_total>0 else 1)) | round(0) %}
+    <div class="col-12 col-md-3">
+      <div class="dash-card h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="dash-title">Target Tagihan</div>
+            <div class="h3 mb-0">{{ tg_lolos }} <small class="muted">lolos</small></div>
+            <div class="dash-kicker">{{ tg_bulan or '-' }}</div>
+          </div>
+          <span class="chip chip-dark">Tagihan</span>
+        </div>
+
+        <div class="progress-slim mt-3">
+          <div class="bar dark" style="width: {{ tg_pct }}%;"></div>
+        </div>
+        <div class="d-flex justify-content-between mt-2 small">
+          <span class="text-success">Lolos: {{ tg_lolos }}</span>
+          <span class="text-danger">Tidak: {{ tg_tidak }}</span>
+          <span class="muted">{{ tg_pct }}%</span>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card p-3">
-      <div class="d-flex justify-content-between align-items-center">
+
+  <!-- ========== NOO + BREAKDOWN ========== -->
+  <div class="row g-3 mt-2">
+    {% set pass_share = ((pw_lolos + pj_lolos + tg_lolos) /
+                         ((pw_total + pj_total + tg_total) if (pw_total+pj_total+tg_total)>0 else 1)
+                         * 100) | round(0) %}
+
+    <!-- NOO -->
+    <div class="col-12 col-lg-4">
+      <div class="dash-card h-100 d-flex align-items-center justify-content-between">
         <div>
-          <div class="h5">Target</div>
-          <div class="display-4">{{ total_target }}</div>
+          <div class="dash-title">NOO (Aktivasi)</div>
+          <div class="display-6 dash-value mb-0">{{ noo_total }}</div>
+          <div class="dash-kicker">{{ noo_bulan or '-' }}</div>
+          <div class="mt-2">
+            <span class="chip chip-purple">New Opening</span>
+          </div>
         </div>
-        <span class="badge badge-dark">Penjualan</span>
+        <div class="text-center">
+          <div class="ring" style="--p: {{ pass_share }};">
+            <span>{{ pass_share }}%</span>
+          </div>
+          <div class="ring-sub mt-1">Avg pass rate</div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card p-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <div class="h5">NOO</div>
-          <div class="display-4">{{ total_noo }}</div>
+
+    <!-- Breakdown -->
+    <div class="col-12 col-lg-8">
+      <div class="dash-card h-100">
+        <div class="row g-3">
+          <div class="col-12 col-sm-4">
+            <div class="p-3 rounded-3">
+              <div class="mb-1 text-success fw-semibold">Password Awal</div>
+              <div class="d-flex justify-content-between">
+                <span>Lolos</span><span class="fw-bold">{{ pw_lolos }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Tidak</span><span class="fw-bold">{{ pw_tidak }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-4">
+            <div class="p-3 rounded-3">
+              <div class="mb-1 text-primary fw-semibold">Penjualan</div>
+              <div class="d-flex justify-content-between">
+                <span>Lolos</span><span class="fw-bold">{{ pj_lolos }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Tidak</span><span class="fw-bold">{{ pj_tidak }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-4">
+            <div class="p-3 rounded-3">
+              <div class="mb-1 text-dark fw-semibold">Tagihan</div>
+              <div class="d-flex justify-content-between">
+                <span>Lolos</span><span class="fw-bold">{{ tg_lolos }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Tidak</span><span class="fw-bold">{{ tg_tidak }}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <span class="badge badge-dark">Aktivasi</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card p-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <div class="h5">Call</div>
-          <div class="display-4">{{ total_call }}</div>
+
+        <div class="mt-3 muted small">
+          Tip: klik menu <em>detail</em> masing-masing modul untuk melihat siapa saja yang belum lolos dan alasannya.
         </div>
-        <span class="badge badge-dark">Placeholder</span>
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}

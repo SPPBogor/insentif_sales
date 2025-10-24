@@ -9,6 +9,7 @@ import pandas as pd
 import io, os, re
 from functools import lru_cache
 
+
 # ===================== APP CONFIG =====================
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "change-this-in-prod"
@@ -18,6 +19,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # ===================== MODELS =====================
+def latest_bulan(Model):
+    try:
+        m = db.session.query(func.max(Model.bulan)).scalar()
+        return (m or "").strip()
+    except Exception:
+        return ""
+    
 def get_threshold(kind, divisi):
     row = Threshold.query.filter_by(kind=kind, divisi=divisi).first() \
        or Threshold.query.filter_by(kind=kind, divisi=None).first()
@@ -409,15 +417,68 @@ def root():
 
 @app.route("/dashboard")
 def dashboard():
+    # 1) Total salesman (master)
     total_salesman = Salesman.query.count()
-    total_target = TargetPenjualan.query.count()
-    total_noo = NOO.query.count()
-    total_call = Call.query.count()
-    return render_template("dashboard.html",
-                           total_salesman=total_salesman,
-                           total_target=total_target,
-                           total_noo=total_noo,
-                           total_call=total_call)
+
+    # 2) PASSWORD AWAL — bulan terakhir & hitung lolos/tidak
+    pw_bulan = latest_bulan(PasswordAwal)
+    pw_lolos = pw_tidak = 0
+    if pw_bulan:
+        pw_rows = db.session.query(PasswordAwal, Salesman)\
+            .join(Salesman, PasswordAwal.salesman_id == Salesman.id)\
+            .filter(PasswordAwal.bulan == pw_bulan).all()
+        for r, s in pw_rows:
+            if calc_password_awal_pass(s.id, r.bulan, s.divisi):  # pakai threshold di tabel thresholds
+                pw_lolos += 1
+            else:
+                pw_tidak += 1
+
+    # 3) TARGET PENJUALAN — bulan terakhir & hitung lolos/tidak
+    pj_bulan = latest_bulan(TargetPenjualan)
+    pj_lolos = pj_tidak = 0
+    if pj_bulan:
+        pj_rows = db.session.query(TargetPenjualan, Salesman)\
+            .join(Salesman, TargetPenjualan.salesman_id == Salesman.id)\
+            .filter(TargetPenjualan.bulan == pj_bulan).all()
+        for r, s in pj_rows:
+            if calc_pass_penjualan(s.divisi, r.target_amount, r.actual_amount):  # threshold jenis "penjualan"
+                pj_lolos += 1
+            else:
+                pj_tidak += 1
+
+    # 4) TARGET TAGIHAN — bulan terakhir & hitung lolos/tidak
+    tg_bulan = latest_bulan(TargetTagihan)
+    tg_lolos = tg_tidak = 0
+    if tg_bulan:
+        tg_rows = db.session.query(TargetTagihan, Salesman)\
+            .join(Salesman, TargetTagihan.salesman_id == Salesman.id)\
+            .filter(TargetTagihan.bulan == tg_bulan).all()
+        for r, s in tg_rows:
+            if calc_pass_tagihan(s.divisi, r.target_amount, r.actual_amount):  # threshold jenis "tagihan"
+                tg_lolos += 1
+            else:
+                tg_tidak += 1
+
+    # 5) NOO ONLY — total jumlah toko NOO (Aktivasi) pada bulan terakhir
+    #    (bukan hitung salesman, tapi total angka "jumlah_toko_noo" di bulan terakhir)
+    noo_bulan = latest_bulan(NOO)
+    noo_total = 0
+    if noo_bulan:
+        noo_total = db.session.query(func.coalesce(func.sum(NOO.jumlah_toko_noo), 0))\
+            .filter(NOO.bulan == noo_bulan).scalar() or 0
+
+    return render_template(
+        "dashboard.html",
+        total_salesman=total_salesman,
+        # password awal
+        pw_bulan=pw_bulan, pw_lolos=pw_lolos, pw_tidak=pw_tidak,
+        # penjualan
+        pj_bulan=pj_bulan, pj_lolos=pj_lolos, pj_tidak=pj_tidak,
+        # tagihan
+        tg_bulan=tg_bulan, tg_lolos=tg_lolos, tg_tidak=tg_tidak,
+        # noo
+        noo_bulan=noo_bulan, noo_total=noo_total
+    )
 
 # ----- Salesman CRUD -----
 @app.route("/salesman")

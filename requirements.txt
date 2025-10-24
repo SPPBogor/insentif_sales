@@ -1,0 +1,5 @@
+flask
+gunicorn
+flask_sqlalchemy
+pandas
+openpyxl
